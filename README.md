@@ -29,13 +29,13 @@
 
 ---
 
-## 3️⃣ MODELE STRATEGICZNE (Trader/Gambler)
+## 3️⃣ MODELE STRATEGICZNE (GridGambler Core)
 **Cel:** Maksymalizacja zysku przez agresywne i strategiczne zarządzanie produkcją oraz dystrybucją ciepła  
 *(Dane z modeli systemowych i rynkowych karmią tego "stratega")*
 
 | Model                                          | Opis                                                                                                                                                  | Technologie / Algorytmy                                                       | Biblioteki |
 |------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|------------|
-| **Trader AI – Model strategii spekulacyjnych**   | Decyduje, kiedy grać agresywnie, a kiedy zachować ostrożność. Na podstawie danych z modeli systemowych i rynkowych wyznacza optymalne działania.   | Reinforcement Learning (DQN, PPO), Monte Carlo Simulations                      | [stable-baselines3](https://stable-baselines3.readthedocs.io/), [ray.rllib](https://docs.ray.io/en/latest/rllib.html) |
+| **Model strategii spekulacyjnych**   | Decyduje, kiedy grać agresywnie, a kiedy zachować ostrożność. Na podstawie danych z modeli systemowych i rynkowych wyznacza optymalne działania.   | Reinforcement Learning (DQN, PPO), Monte Carlo Simulations                      | [stable-baselines3](https://stable-baselines3.readthedocs.io/), [ray.rllib](https://docs.ray.io/en/latest/rllib.html) |
 | **Model optymalizacji pracy kotłów w ekstremach** | Analizuje, czy warto zwiększyć produkcję lub przydusić kocioł dla maksymalizacji zysku, biorąc pod uwagę techniczne ograniczenia i koszty.                | Constraint Optimization, RL                                                   | [cvxpy](https://www.cvxpy.org/), [gurobi](https://www.gurobi.com/) |
 | **Model analizy zachowań rynkowych**              | Prognozuje reakcje i strategie innych uczestników rynku poprzez symulację wieloagentową, analizę ewolucyjną oraz modelowanie z wykorzystaniem ABM.   | Agent-Based Modeling, Evolutionary Game Theory, Multi-Agent Reinforcement Learning | [mesa](https://mesa.readthedocs.io/), [pettingzoo](https://www.pettingzoo.ml/), [OpenSpiel](https://www.open-spiel.org/) |
 | **Model zarządzania mocą szczytową**              | Przewiduje, kiedy najlepiej dostarczyć ciepło, aby uzyskać najlepsze warunki cenowe lub operacyjne, wykorzystując dostępne rezerwy systemu.                           | Reinforcement Learning, Multi-Agent Learning                                   | [maddpg](https://github.com/openai/maddpg), [pettingzoo](https://www.pettingzoo.ml/) |
@@ -60,9 +60,9 @@
 | **Modele AI (predykcyjne & RL)**      | `TensorFlow`, `PyTorch`, `XGBoost`, `ARIMA`, `Prophet`                                  | Python      |
 | **Optymalizacja / Teoria Gier**     | `cvxpy`, `scipy.optimize`, `Gurobi`, `Stable-Baselines3`, `Ray RLlib`                   | Python      |
 | **NLP & Analiza Rynkowa**            | `transformers`, `nltk`, `spacy`, `pymc3`                                                | Python      |
-| **Agent-Based Modeling / Multi-Agent** | `mesa`, `pettingzoo`, `OpenSpiel`                                                     | Python      |
-| **Dashboard/Interfejs**             | `FastAPI`, `React.js`                                                                   | Python, JavaScript |
-| **Bazy Danych**                     | `PostgreSQL (TimescaleDB)`, `InfluxDB`, `Redis`                                         | SQL, Python |
+| **Agent-Based Modeling / Multi-Agent** | `mesa`, `pettingzoo`, `gambit`                                                     | Python      |
+| **Dashboard/Interfejs**             | `Grafana`, `GrafanaOnCall`                                                                   | Python, JavaScript |
+| **Bazy Danych (Opcjonalnie)**                     | `PostgreSQL (TimescaleDB)`, `InfluxDB`, `Redis`                                         | SQL, Python |
 
 ---
 
