@@ -95,7 +95,7 @@ GridGambler działa w hybrydowym środowisku – głównie w Pythonie, ale z wyk
 
 ## Co dalej?
 
-# 🔥 Integracja AVEVA Historian z Pathway – Strumieniowe Przetwarzanie Danych  
+# 🔥 Przykład - Integracja AVEVA Historian z Pathway – Strumieniowe Przetwarzanie Danych  
 
 ## 📌 Cel  
 Łączymy się z **AVEVA Historian**, pobieramy dane o temperaturach węzła cieplnego i **strumieniowo przetwarzamy je w Pathway**, zamiast zapisywać do pliku. Dzięki temu dane mogą trafić bezpośrednio do modelu optymalizacji.
