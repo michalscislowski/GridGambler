@@ -1,6 +1,6 @@
 # 📊 GridGambler
 ---
-
+![Schemat systemu](GridGambler.png)
 ---
 
 ## 1️⃣ MODELE SYSTEMOWE (Techniczne)  
