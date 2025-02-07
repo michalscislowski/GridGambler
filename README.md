@@ -94,8 +94,92 @@ GridGambler działa w hybrydowym środowisku – głównie w Pythonie, ale z wyk
 ---
 
 ## Co dalej?
-- Rozbudowa modeli predykcyjnych i testowanie strategii w symulacjach.
-- Integracja z systemami SCADA i Historian.
-- Ciągła kalibracja za pomocą Meta-Testera.
 
-Chcesz dołączyć do projektu lub masz pytania? **Skontaktuj się z nami!**
+# 🔥 Integracja AVEVA Historian z Pathway – Strumieniowe Przetwarzanie Danych  
+
+## 📌 Cel  
+Łączymy się z **AVEVA Historian**, pobieramy dane o temperaturach węzła cieplnego i **strumieniowo przetwarzamy je w Pathway**, zamiast zapisywać do pliku. Dzięki temu dane mogą trafić bezpośrednio do modelu optymalizacji.
+
+---
+
+## ⚙️ Instalacja wymaganych bibliotek  
+
+Aby uruchomić kod, zainstaluj potrzebne zależności:  
+
+```bash
+pip install pyodbc pandas pathway
+```
+
+**## ⚙️ Kod Python**
+
+```python
+import pyodbc  # Połączenie z bazą SQL (AVEVA Historian)
+import pandas as pd  # Operacje na danych tabelarycznych
+import pathway as pw  # Przetwarzanie strumieniowe
+
+# 🔹 KROK 1: Połączenie z bazą danych AVEVA Historian
+connection_string = (
+    "DRIVER={SQL Server};"  # Sterownik ODBC do SQL Server
+    "SERVER=your_server_name;"  # Nazwa serwera bazy danych
+    "DATABASE=Runtime;"  # Baza danych Historiana
+    "UID=your_username;"  # Użytkownik bazy
+    "PWD=your_password;"  # Hasło
+)
+
+# 🔹 KROK 2: Definiujemy zapytanie SQL do pobrania danych historycznych
+query = """
+SELECT DateTime, TagName, Value
+FROM [INSQL].Runtime.dbo.History
+WHERE TagName IN ('ThermalNode.Temperature_In', 'ThermalNode.Temperature_Out')  -- Czujniki temperatury na węźle
+AND DateTime >= DATEADD(MINUTE, -10, GETDATE())  -- Pobieramy ostatnie 10 minut
+ORDER BY DateTime;
+"""
+
+# 🔹 KROK 3: Strumieniowe pobieranie danych z Historiana i wysyłanie ich do Pathway
+class HistorianConnector(pw.io.Connector):  
+    def run(self):
+        """Łączymy się z AVEVA Historian i cyklicznie pobieramy dane"""
+        while True:
+            with pyodbc.connect(connection_string) as conn:
+                df = pd.read_sql(query, conn)  # Pobieramy dane SQL do Pandas DataFrame
+            for _, row in df.iterrows():
+                self.emit({
+                    "DateTime": row["DateTime"],
+                    "TagName": row["TagName"],
+                    "Value": row["Value"]
+                })  # Wysyłamy pojedyncze rekordy do Pathway
+            pw.sleep(60)  # Aktualizujemy dane co minutę
+
+# 🔹 KROK 4: Tworzymy tabelę Pathway, która odbiera strumień danych
+class HistorianSchema(pw.Schema):
+    DateTime: pw.Timestamp
+    TagName: str
+    Value: float
+
+historian_stream = pw.Table.from_connector(
+    HistorianConnector(), schema=HistorianSchema
+)
+
+# 🔹 KROK 5: Pivotowanie danych, aby uzyskać osobne kolumny dla temperatury wejściowej i powrotnej
+pivoted_table = historian_stream.groupby("DateTime").pivot(
+    columns="TagName", values="Value"
+).aggregate(
+    Temperature_In=pw.reducers.first("ThermalNode.Temperature_In"),
+    Temperature_Out=pw.reducers.first("ThermalNode.Temperature_Out"),
+)
+
+# 🔹 KROK 6: Obliczamy stratę ciepła w strumieniu
+result_stream = pivoted_table.select(
+    "DateTime",
+    "Temperature_In",
+    "Temperature_Out",
+    DeltaTemperature=pw.this.Temperature_In - pw.this.Temperature_Out,
+)
+
+# 🔹 KROK 7: Strumieniowe wysyłanie danych do modelu
+pw.io.default = pw.io.Stream()  # Konfigurujemy Pathway na strumieniowe przetwarzanie danych
+result_stream.to_stream()  # Wysyłamy dane do dalszego przetwarzania w modelu
+
+# ✅ Gotowe! Pathway będzie teraz na bieżąco pobierał dane z AVEVA Historian i przesyłał je do modelu.
+
+```
